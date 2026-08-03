@@ -1,0 +1,15 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+GITHELPER_DEBUG="${GITHELPER_DEBUG:-0}"
+[ "${GITHELPER_DEBUG}" == "1" ] && set -x
+
+TARGET_NEW_BRANCH="${1:-}"
+shift
+NEW_WORKTREE="$(realpath "../")/$(basename "$(pwd)")-${TARGET_NEW_BRANCH}"
+git worktree remove -f "${NEW_WORKTREE}"
+git worktree prune
+if [ ! -e "${NEW_WORKTREE}" ] ; then
+  echo "Successfully deleted worktree"
+fi

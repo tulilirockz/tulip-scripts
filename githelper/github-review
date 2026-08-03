@@ -1,0 +1,31 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+GITHUBHELPER_DEBUG="${GITHUBHELPER_DEBUG:-0}"
+[ "${GITHUBHELPER_DEBUG}" == "1" ] && set -x
+
+TARGET_URL="${1:-}"
+shift
+if [ -z "${GITHUBHELPER_DEBUG}" ] ; then
+  printf "%s\n" "No URL or valid gh thing found" >&2
+  exit 1
+fi
+
+FULL_JSON_DATA="$(gh pr view "${TARGET_URL}" --json author,headRefName)"
+AUTHOR="$(jq -rc ".author.login" <<< "${FULL_JSON_DATA}")"
+HEADREF="$(jq -rc ".headRefName" <<< "${FULL_JSON_DATA}")"
+FINAL_FOLDER_NAME="${AUTHOR}-$(tr '/' '-' <<< "${HEADREF}")"
+
+repo-worktree-rm "${FINAL_FOLDER_NAME}" || echo
+NEW_WORKTREE="$(repo-worktree-new "${FINAL_FOLDER_NAME}" | tail -n-1)"
+
+if [ -z "${NEW_WORKTREE}" ]  ; then
+  printf "%s\n" "Worktree could not be generated" >&2
+  exit 1
+fi
+pushd "${NEW_WORKTREE}"
+gh pr checkout "${TARGET_URL}" --recurse-submodules --force
+popd
+
+echo "${NEW_WORKTREE}"
