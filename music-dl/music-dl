@@ -8,7 +8,7 @@ MUSIC_DL_DEBUG="${MUSIC_DL_DEBUG:-0}"
 MUSIC_DL_LIBRARY_PATH="${MUSIC_DL_LIBRARY_PATH:-"./"}"
 MUSIC_DL_FOLDER_TO_SAVE="${MUSIC_DL_FOLDER_TO_SAVE:-}"
 
-while [[ "$#" -gt 0 ]]; do
+while :; do
   case "$1" in
     -c|--channel)
       MUSIC_DL_FOLDER_TO_SAVE="${2-}"
