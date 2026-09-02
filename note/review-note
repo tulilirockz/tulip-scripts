@@ -1,0 +1,27 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+REVIEW_NOTE_DEBUG="${REVIEW_NOTE_DEBUG:-0}"
+[ "${REVIEW_NOTE_DEBUG}" == "1" ] && set -x
+
+REVIEW_NOTE_COPY_TO_CLIPBOARD="${REVIEW_NOTE_COPY_TO_CLIPBOARD:-1}"
+
+TARGET_URL="${REVIEW_NOTE_TARGET_URL:-$1}"
+
+WHAT_TO_QUERY="pr"
+if ! grep -q "pull" <<< "${TARGET_URL}"; then
+    WHAT_TO_QUERY="issue"
+fi
+
+OUTPUT="- [ ] [$(gh "${WHAT_TO_QUERY}" view "${TARGET_URL}" --json title | jq -rc '.title' | tr '[' '(' | tr ']' ')')](${TARGET_URL})"
+
+if [ "${REVIEW_NOTE_COPY_TO_CLIPBOARD}" == 1 ]; then
+    if command -v pbcopy &>/dev/null ; then
+        pbcopy <<< "${OUTPUT}"
+    else
+        wl-copy <<< "${OUTPUT}"
+    fi
+fi
+
+echo "${OUTPUT}"
