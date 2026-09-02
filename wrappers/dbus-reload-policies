@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+
+set -xeuo pipefail
+
+dbus-send --print-reply --system --type=method_call --dest=org.freedesktop.DBus / org.freedesktop.DBus.ReloadConfig $@

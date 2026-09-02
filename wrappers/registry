@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+
+set -xeuo pipefail
+
+"${CONTAINER_MANAGER:-podman}" run -d --name "${1:-"registry"}" -p "${2:-"5005"}:5000" "${3:-docker.io/distribution/distribution:latest}"

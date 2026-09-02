@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+
+set -xeuo pipefail
+
+inotifywait -m -r -e modify,create,delete,move,attrib $@
