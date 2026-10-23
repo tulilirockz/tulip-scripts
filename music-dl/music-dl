@@ -1,6 +1,8 @@
 #!/usr/bin/env bash
 
-set -euo pipefail
+set -eo pipefail
+TARGET_URL_FOR_DOWNLOAD="${1:-$(wl-paste)}"
+set -u
 
 MUSIC_DL_DEBUG="${MUSIC_DL_DEBUG:-0}"
 [ "${MUSIC_DL_DEBUG}" == "1" ] && set -x
@@ -9,13 +11,13 @@ MUSIC_DL_LIBRARY_PATH="${MUSIC_DL_LIBRARY_PATH:-"./"}"
 MUSIC_DL_FOLDER_TO_SAVE="${MUSIC_DL_FOLDER_TO_SAVE:-}"
 
 while :; do
-  case "$1" in
+  case "${TARGET_URL_FOR_DOWNLOAD}" in
     -c|--channel)
       MUSIC_DL_FOLDER_TO_SAVE="${2-}"
       shift 2
       ;;
     --channel=*)
-      MUSIC_DL_FOLDER_TO_SAVE="${1#--channel=}"
+      MUSIC_DL_FOLDER_TO_SAVE="${TARGET_URL_FOR_DOWNLOAD#--channel=}"
       shift
       ;;
     *)
@@ -25,8 +27,8 @@ while :; do
 done
 
 if [ -z "${MUSIC_DL_FOLDER_TO_SAVE}" ] ; then
-  YT_DLP_OUTPUT_CHANNEL_AND_TITLE="$(yt-dlp --print channel --print title "$1")"
-  MUSIC_DL_CHANNEL="$(head -n1 <<< "${YT_DLP_OUTPUT_CHANNEL_AND_TITLE}")"
+  YT_DLP_OUTPUT_CHANNEL_AND_TITLE="$(yt-dlp --print channel --print title "${TARGET_URL_FOR_DOWNLOAD}")"
+  MUSIC_DL_CHANNEL="$(head -n1 <<< "${YT_DLP_OUTPUT_CHANNEL_AND_TITLE}" | sed "s/ - Topic//")"
   MUSIC_DL_TITLE="$(tail -n-1 <<< "${YT_DLP_OUTPUT_CHANNEL_AND_TITLE}" | cut -f1 -d"-")"
   MUSIC_DL_TITLE="${MUSIC_DL_TITLE#[[:space:]]}"
   MUSIC_DL_TITLE="${MUSIC_DL_TITLE%[[:space:]]}"
