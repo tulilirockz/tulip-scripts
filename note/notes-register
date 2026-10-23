@@ -18,7 +18,7 @@ TODAY_SEC="$(date +"%s")"
 DAY_SEC="86400"
 DATE_TARGET="$(date -d "@$(( TODAY_SEC - ( DATE_OFFSET * DAY_SEC ) ))" "+${DATE_FORMAT_FOR_THIS_SCRIPT}")"
 
-if ! find "${NOTES_REGISTER_NOTES_PATH}" -exec basename {} .md \; | cut -f"${DATE_FORMAT_CUT_OFFSETS_FOR_THIS_SCRIPT}" -d- | grep -F "${DATE_TARGET}" ; then
+if ! find "${NOTES_REGISTER_NOTES_PATH}" -exec basename {} .md \; | cut -f"${DATE_FORMAT_CUT_OFFSETS_FOR_THIS_SCRIPT}" -d- | grep -q -F "${DATE_TARGET}" ; then
     echo "# Note $DATE_TARGET" | tee -a "${NOTES_REGISTER_NOTES_PATH}/Note-${DATE_TARGET}.md"
 fi
 
